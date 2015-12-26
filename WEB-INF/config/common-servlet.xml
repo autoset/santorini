@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://santorini.autoset.org/schema/beans"
+		xmlns:context="http://santorini.autoset.org/schema/context"
+		xmlns:mvc="http://santorini.autoset.org/schema/mvc"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+
+	<!-- 컨트롤러 스캔 위치 지정 -->
+	<context:component-scan base-package="example">
+	</context:component-scan>
+	
+	<!-- MySQL -->
+	<bean id="dataSource" class="org.autoset.santorini.BasicDataSource">
+        <property name="driverClassName" value="org.autoset.santorini.database.MysqlDriver"/>
+        <property name="url" value="mysql://localhost:3306/example" />
+        <property name="username" value="root"/>
+        <property name="password" value="autoset"/>
+    </bean>
+
+	<mvc:interceptors>
+		<bean class="example.common.interceptor.LoginCheckIntercepter"/>
+	</mvc:interceptors>
+
+	<bean id="tilesViewResolver" class="org.autoset.santorini.view.UrlBasedViewResolver" >
+		<property name="viewClass" value="org.autoset.santorini.view.TilesView" />
+		<property name="order" value="2" />
+	</bean>
+
+	<bean id="tilesConfigurer" class="org.autoset.santorini.view.TilesConfigurer">
+		<property name="definitions">
+			<list>
+				<value>/WEB-INF/config/tiles2def/tiles_def.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean class="org.autoset.santorini.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/php/" />
+		<property name="suffix" value=".php" />
+		<property name="order" value="3" />
+	</bean>
+
+	<bean id="sysPropService" class="org.autoset.santorini.property.impl.PropertyServiceImpl" destroy-method="destroy">
+		<property name="properties">
+	        <map>
+	        	<entry key="pageUnit" value="10"/>
+	        	<entry key="pageSize" value="10"/>	
+	        </map>
+		</property>
+		<property name="extFileName">
+			<set>
+		        <map>
+		        	<entry key="encoding" value="UTF-8" />
+		        	<entry key="filename" value="/WEB-INF/config/properties/system.properties" />
+		        </map>
+			</set>		
+		</property>
+	</bean>
+
+	<bean class="org.autoset.santorini.handler.SimpleMappingExceptionResolver">
+		<property name="defaultErrorView" value="common/error_default"/>
+		<property name="exceptionMappings">
+			<props>
+				<prop key="org.autoset.santorini.exception.DataAccessException">common/error_database</prop>
+				<prop key="example.common.exception.HttpSessionRequiredException">common/error_session</prop>
+			</props>
+		</property>
+	</bean>
+
+</beans>

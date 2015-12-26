@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+    version="2.0">
+    
+    <description>Example TLD</description> 
+    <display-name>Example TagLib</display-name>
+    <tlib-version>2.0</tlib-version>
+    <short-name>c</short-name>
+    <uri>http://www.example.com/TagLibrary</uri>
+
+    <tag>
+        <name>pagination</name>
+        <tag-class>example.common.tag.Pagination</tag-class>
+        <body-content>PHP</body-content>
+        <attribute>
+            <name>paginationInfo</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+
+</taglib>

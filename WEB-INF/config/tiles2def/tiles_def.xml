@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<tiles-definitions>
+
+	<!-- Master Page -->
+	<definition name="masterPage" template="/WEB-INF/php/layouts/master.php">
+		<put-attribute name="title"      value="Welcome Santorini Framework" type="string" />
+		<put-attribute name="body"      value="/WEB-INF/php/layouts/body.php" />
+	</definition>
+
+	<definition name="front/home" extends="masterPage">
+		<put-attribute name="title"      value="산토리니 프레임워크" type="string" />
+		<put-attribute name="body"      value="/WEB-INF/php/front/home.php" />
+	</definition>
+
+</tiles-definitions>
