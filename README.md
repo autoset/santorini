@@ -19,3 +19,8 @@
 - JAVA 및 Spring Interface 명 동일하게 제공(JAVA 포팅 용이)
 - JAVA 개발 환경 차용을 통한 익숙한 디렉토리 구조(for JAVA개발자)
 - 캐싱 기능을 통한 빠른 로직 수행 처리 지원
+
+## 설치 방법
+
+1. ddl_example.sql 파일을 MySQL/MariaDB에 실행해, 세션 관리용 테이블과 사용자 관리용 테이블을 생성한다.
+2. servlet.php가 있는 폴더를 `DOCUMENT_ROOT`로 하여, 웹 서버를 구동한다.
