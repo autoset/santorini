@@ -23,3 +23,7 @@
 
 1. ddl_example.sql 파일을 MySQL/MariaDB에 실행해, 세션 관리용 테이블과 사용자 관리용 테이블을 생성한다.
 2. servlet.php가 있는 폴더를 `DOCUMENT_ROOT`로 하여, 웹 서버를 구동한다.
+
+## 사용 메뉴얼
+
+* 산토리니 프레임워크 WiKi - https://github.com/autoset/santorini/wiki
