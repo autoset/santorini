@@ -7,6 +7,8 @@
 - JAVA개발자와 PHP 개발자 간의 언어 장벽을 낮추고 언어간의 포팅이 용이하도록 설계되어 보다 생산적으로 개발하고 다양한 환경으로 쉽게 포팅할 수
 있도록 설계되어 있습니다.
 
+* [[산토리니 프레임워크 개발 배경|About ! Santorini-Framework]]
+
 ## 주요 특징
 
 - 빠른 개발을 위한 SDK(Software Development Kit) 제공
