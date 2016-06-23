@@ -2,7 +2,6 @@
 
 namespace org\autoset\santorini\http;
 
-// NOTE : PHP 7에서 충돌나기 때문에 제거(사용처 미확인으로 임시 주석처리)
 //use org\autoset\santorini\String;
 
 class HttpServletRequest
@@ -147,6 +146,18 @@ class HttpServletRequest
 	*/
 	public function getParameter($name)
 	{
+		return $this->getMixedParameter($name, true);
+	}
+
+	/*
+     * <pre>
+     * 
+	 * </pre>
+     * 
+     * @return Object
+	*/
+	public function getMixedParameter($name, $singleReturn = true)
+	{
 		$value = null;
 
 		switch ($this->getMethod())
@@ -158,13 +169,28 @@ class HttpServletRequest
 
 				if (isset($_POST[$name]))
 				{
-					$value = $this->__decodeUnicodeUrl( $this->__smartStripSlashes( $_POST[$name] ) );
+					// PHP 7.0.0 이상에서는 그대로 수용
+					if (PHP_VERSION_ID >= 70000)
+					{
+						$value = $_POST[$name];
+					}
+					else
+					{
+						$value = $this->__decodeUnicodeUrl( $this->__smartStripSlashes( $_POST[$name] ) );
+					}
 				}
 				else
 				{
 					if (isset($_FILES[$name]))
 					{
-						$value = new MultipartFile($_FILES[$name]);
+						if (is_array($_FILES[$name]['tmp_name']))
+						{
+							$value = MultipartFiles::getData($_FILES[$name]);
+						}
+						else
+						{
+							$value = new MultipartFile($_FILES[$name]);
+						}
 					}
 					else
 					{
@@ -181,7 +207,7 @@ class HttpServletRequest
 				break;
 		}
 
-		if (is_array($value))
+		if ($singleReturn == true && is_array($value))
 			return $value[0];
 		else
 			return $value;
@@ -293,10 +319,22 @@ class HttpServletRequest
 		switch ($this->getMethod())
 		{
 			case 'GET':
-				return isset($_GET) ? array_keys($_GET) : null;
+				return isset($_GET) ? array_keys($_GET) : array();
 				break;
 			case 'POST':
-				return isset($_POST) ? array_keys($_POST) : null;
+				$names = array();
+			
+				if (isset($_POST))
+				{
+					$names = array_keys($_POST);
+				}
+			
+				if (isset($_FILES))
+				{
+					$names = array_merge($names, array_keys($_FILES));
+				}
+				
+				return $names;
 				break;
 		}
 	}
@@ -322,7 +360,18 @@ class HttpServletRequest
 	{
 		return file_get_contents("php://input");
 	}
+
+	function getContentType()
+	{
+		$contentType = isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] : null;
+
+		if (is_null($contentType))
+			return null;
+
+		if (($pos = strpos($contentType, ';')) !== false)
+		{
+			return substr($contentType, 0, $pos);
+		}
+	}
 }
 
-
-?>

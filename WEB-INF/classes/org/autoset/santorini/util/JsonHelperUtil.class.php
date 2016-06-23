@@ -6,7 +6,7 @@ use org\autoset\santorini\vo\VirtualFormVO;
 
 class JsonHelperUtil
 {
-	static public function String2VO($str)
+	public static function String2VO($str)
 	{
 		$formVO = new VirtualFormVO;
 
