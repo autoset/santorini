@@ -37,8 +37,8 @@ class CubridDriver
 		$host = isset($arrTmp[2]) ? $arrTmp[2] : '127.0.0.1';
 		$port = isset($arrTmp[3]) ? $arrTmp[3] : '33000';
 		$dbName = isset($arrTmp[4]) ? $arrTmp[4] : 'demo';
-		$userId = isset($arrTmp[5]) ? $arrTmp[5] : 'dba';
-		$password = isset($arrTmp[6]) ? $arrTmp[6] : '';
+		$userId = isset($arrTmp[5]) && !empty($arrTmp[5]) ? $arrTmp[5] : $username;
+		$password = isset($arrTmp[6]) && !empty($arrTmp[6]) ? $arrTmp[6] : $password;
 		$property = isset($arrTmp[7]) ? $arrTmp[7] : '';
 
 		if ($jdbc != 'jdbc' && $cubrid != 'cubrid')

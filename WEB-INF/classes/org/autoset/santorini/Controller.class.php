@@ -77,8 +77,11 @@ class Controller extends HttpServlet
 
 	public function getPathVar($itemIdx)
 	{
-		return self::$__parent__->getPathVar($itemIdx);
+		if (is_string($itemIdx)) {
+			return self::$__parent__->getPathVarByName($itemIdx);
+		} else {
+			return self::$__parent__->getPathVarByIdx($itemIdx);
+		}
 	}
-} 
 
-?>
+}

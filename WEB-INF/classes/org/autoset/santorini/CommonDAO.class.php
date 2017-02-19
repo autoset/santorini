@@ -41,7 +41,7 @@ class CommonDAO
 		switch (strtolower(DB_TYPE))
 		{
 			case 'cubrid':
-				return (int)$this->getOne('SELECT SEQ_SN.NEXTVAL FROM db_root');
+				//return (int)$this->getOne('SELECT SEQ_SN.NEXTVAL FROM db_root');
 			case 'mysql':
 				return (int)$this->getOne('SELECT LAST_INSERT_ID()');
 			case 'mssql':
