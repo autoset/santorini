@@ -26,7 +26,8 @@ class JSONView
 
 		$this->sendResponseHeader($req, $res);
 
-		$res->getWriter()->print_($this->jsonEncode($arr));
+		$res->getWriter()->print_(json_encode($arr, JSON_UNESCAPED_UNICODE));
+		//$res->getWriter()->print_($this->jsonEncode($arr));
 
 		return true;
 	}
@@ -41,7 +42,7 @@ class JSONView
 		}
 		else
 		{
-			$res->setContentType('text/javascript; charset=utf-8');
+			$res->setContentType('application/json; charset=utf-8');
 		}
 	}
 

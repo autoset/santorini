@@ -29,6 +29,7 @@ class DispatcherServlet
 	private $_annotationMap = array();
 	private $_urlPattern = null;
 	private $_requestURI = null;
+	private $_requestMethod = null;
 
 	private $_beanMap = array(); // BeanFactory
 	private $_viewResolverMap = array();
@@ -36,6 +37,7 @@ class DispatcherServlet
 
 	private $_calledMethodName = null;
 	private $_pathVars = array();
+	private $_pathVarNames = array();
 
 	public function __construct($param)
 	{
@@ -61,6 +63,7 @@ class DispatcherServlet
 			$this->_urlPattern = implode('|',$param['url-pattern']);
 		}
 
+		$this->_requestMethod = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
 		$this->_requestURI = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '/';
 
 		if (!preg_match("#{$this->_urlPattern}$#iU", $this->_requestURI))
@@ -69,7 +72,7 @@ class DispatcherServlet
 
 		$this->doContextComponentScan();
 
-		$this->setSessionHandler();
+		//$this->setSessionHandler();
 
 		$this->doBeanMapping();
 	}
@@ -359,19 +362,41 @@ class DispatcherServlet
 					if ($className != 'RequestMapping')
 						continue;
 
-					$matches = array();
+					
+					$curRequestMappingValue = $classObj->value;
+					$curRequestMappingMethod = is_string($classObj->method) ? array($classObj->method) : $classObj->method;
 
-					if ($classObj->value == $this->_requestURI ||
-						preg_match('#^'.$classObj->value.'$#', $this->_requestURI, $matches))
+					if (sizeof($curRequestMappingMethod) < 1) {
+						$curRequestMappingMethod = array('GET', 'POST', 'PUT', 'DELETE');
+					} else {
+						$curRequestMappingMethod = array_map('strtoupper', $curRequestMappingMethod);
+					}
+
+					$pathVarValues = array();
+					$pathVarNames = array();
+
+					// PathVariable 전처리
+					if (preg_match_all("#\{(.*?)\}#s", $classObj->value, $pathVars)) {
+						foreach ($pathVars[1] as $idx => $pathVarName) {
+							$pathVarNames[] = $pathVarName;
+							$curRequestMappingValue = str_replace($pathVars[0][$idx], '([-_a-zA-Z0-9]+)', $curRequestMappingValue);
+						}
+					}
+
+					$matchURI = $curRequestMappingValue == $this->_requestURI || preg_match('#^'.$curRequestMappingValue.'$#', $this->_requestURI, $pathVarValues);
+					$matchMethod = in_array($this->_requestMethod, $curRequestMappingMethod);
+
+					if ($matchURI && $matchMethod)
 					{
-						if (sizeof($matches) > 0)
-							array_shift($matches);
+						if (sizeof($pathVarValues) > 0)
+							array_shift($pathVarValues);
 
 						$oCurClass = array(
 							'className'		=> $this->getNamespaceByClassPath($classPath),
 							'methodName'	=> $methodName,
 							'annotation'	=> $arrAnnotationClasses,
-							'pathVars'		=> $matches
+							'pathVars'		=> $pathVarValues,
+							'pathVarNames'	=> $pathVarNames
 						);
 						
 						break 3;
@@ -385,7 +410,6 @@ class DispatcherServlet
 
 		$this->_annotationMap = null;
 		
-		
 		$this->createController($oCurClass);
 	}
 
@@ -396,6 +420,7 @@ class DispatcherServlet
 
 		$this->_calledMethodName = $classInfo['methodName'];
 		$this->_pathVars = $classInfo['pathVars'];
+		$this->_pathVarNames = $classInfo['pathVarNames'];
 
 		$request = new HttpServletRequest;
 		$response = new HttpServletResponse;
@@ -442,11 +467,15 @@ class DispatcherServlet
 		return $this->_interceptorMap;
 	}
 
-	public function getPathVar($itemIdx)
+	public function getPathVarByIdx($itemIdx)
 	{
 		return isset($this->_pathVars[$itemIdx]) ? $this->_pathVars[$itemIdx] : null;
 	}
 
-} 
+	public function getPathVarByName($itemName)
+	{
+		$itemIdx = array_search( $itemName, $this->_pathVarNames );
+		return $itemIdx > -1 ? $this->getPathVarByIdx($itemIdx) : null;
+	}
 
-?>
+} 
